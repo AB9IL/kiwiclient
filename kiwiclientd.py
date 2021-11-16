@@ -36,6 +36,7 @@ class KiwiSoundRecorder(KiwiSDRStream):
         self._type = 'SND'
         freq = options.frequency
         options.S_meter = False
+        options.stats = False
         #logging.info("%s:%s freq=%d" % (options.server_host, options.server_port, freq))
         self._freq = freq
         self._modulation = self._options.modulation
@@ -375,14 +376,9 @@ def main():
 
     FORMAT = '%(asctime)-15s pid %(process)5d %(message)s'
     logging.basicConfig(level=logging.getLevelName(options.log_level.upper()), format=FORMAT)
-    if options.log_level.upper() == 'DEBUG':
-        gc.set_debug(gc.DEBUG_SAVEALL | gc.DEBUG_LEAK | gc.DEBUG_UNCOLLECTABLE)
 
     run_event = threading.Event()
     run_event.set()
-
-    if options.tlimit is not None and options.dt != 0:
-        print('Warning: --tlimit ignored when --dt-sec option used')
 
     options.sdt = 0
     options.dir = None
@@ -424,8 +420,6 @@ def main():
         run_event.clear()
         join_threads(snd_recorders)
         print("Exception: threads successfully closed")
-
-    logging.debug('gc %s' % gc.garbage)
 
 if __name__ == '__main__':
     #import faulthandler
